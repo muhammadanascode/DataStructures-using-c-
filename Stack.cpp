@@ -27,7 +27,7 @@ char pop(Node *&top)
     Node *temp = top;
     char result = temp->data;
     top = top->next;
-    delete temp;  // Free the memory after popping the element
+    delete temp; // Free the memory after popping the element
     return result;
 }
 
@@ -38,6 +38,20 @@ int isOperator(char a)
         return 2;
     }
     else if (a == '+' || a == '-')
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int precedence(char c)
+{
+
+    if (c == '*' || c == '/')
+    {
+        return 2;
+    }
+    else if (c == '+' || c == '-')
     {
         return 1;
     }
@@ -59,47 +73,17 @@ string postFix(string infix, Node *&top)
         }
         else
         {
-            if (top == nullptr)
+            while (top != nullptr && precedence(infix[i]) <= precedence(top->data))
             {
-                push(infix[i], top);
+                postfix += pop(top);
             }
-            else
-            {
-                char val = top->data;
-                if (infix[i] == '+' || infix[i] == '-')
-                {
-                    val = pop(top);
-                    while (val != '\0')
-                    {
-                        postfix += val;
-                        val = pop(top);
-                    }
-                    push(infix[i], top);
-                }
-                else if (infix[i] == '*' || infix[i] == '/')
-                {
-                    val = pop(top);
-                    while (val != '\0' && val != '+' && val != '-')
-                    {
-                        postfix += val;
-                        val = pop(top);
-                    }
-                    if (val != '\0')
-                    {
-                        push(val, top);  // Put the popped operator back if it's lower precedence
-                    }
-                    push(infix[i], top);
-                }
-            }
+            push(infix[i], top);
         }
     }
 
-    // Pop all remaining operators in the stack
-    char val = pop(top);
-    while (val != '\0')
+    while (top != nullptr)
     {
-        postfix += val;
-        val = pop(top);
+        postfix += pop(top);
     }
 
     return postfix;

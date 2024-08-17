@@ -44,19 +44,6 @@ int isOperator(char a)
     return 0;
 }
 
-int precedence(char c)
-{
-
-    if (c == '*' || c == '/')
-    {
-        return 2;
-    }
-    else if (c == '+' || c == '-')
-    {
-        return 1;
-    }
-    return 0;
-}
 
 string postFix(string infix, Node *&top)
 {
@@ -73,7 +60,7 @@ string postFix(string infix, Node *&top)
         }
         else
         {
-            while (top != nullptr && precedence(infix[i]) <= precedence(top->data))
+            while (top != nullptr && isOperator(infix[i]) <= isOperator(top->data))
             {
                 postfix += pop(top);
             }

@@ -33,7 +33,16 @@ char pop(Node *&top)
 
 int isOperator(char a)
 {
-    if (a == '*' || a == '/')
+    if (a == '(')
+    {
+        return 4;
+    }
+    else if (a == ')')
+    {
+        return 3;
+    }
+
+    else if (a == '*' || a == '/')
     {
         return 2;
     }
@@ -44,7 +53,6 @@ int isOperator(char a)
     return 0;
 }
 
-
 string postFix(string infix, Node *&top)
 {
     // Get the length of the input infix string
@@ -54,13 +62,34 @@ string postFix(string infix, Node *&top)
     for (int i = 0; i < len; i++)
     {
         int res = isOperator(infix[i]);
-        if (res == 0)
+
+        // if res is equal to '(' then directly push it into the stack
+        if (res == 4)
+        {
+            push(infix[i], top);
+            continue;
+        }
+
+        else if (res == 3) // closing bracket ')'
+        {
+            while (top->data != '(' && top != nullptr)
+            {
+                postfix += pop(top);
+            }
+            // to remove '('
+            pop(top);
+        }
+
+        // if res is equal to ')' then pop the operators in stack until it is equal to
+
+        else if (res == 0)
         {
             postfix += infix[i];
         }
         else
         {
-            while (top != nullptr && isOperator(infix[i]) <= isOperator(top->data))
+            // Pop operators with greater or equal precedence
+            while (top != nullptr && isOperator(infix[i]) <= isOperator(top->data) && top->data != '(')
             {
                 postfix += pop(top);
             }
@@ -79,7 +108,7 @@ string postFix(string infix, Node *&top)
 int main()
 {
     Node *top = nullptr;
-    string str = "a+b*c-d";
+    string str = "(a+b)*(c-d)";
     cout << "POSTFIX STRING : " << postFix(str, top);
     return 0;
 }

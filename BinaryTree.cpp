@@ -18,9 +18,11 @@ void inOrder(Node *root)
     {
         return;
     }
+    cout << '(';
     inOrder(root->LN);
     cout << root->ch;
     inOrder(root->RN);
+    cout << ')';
 }
 
 void preOrder(Node *root)
@@ -45,8 +47,6 @@ void postOrder(Node *root)
     cout << root->ch;
 }
 
-
-
 int isOperator(char a)
 {
     if (a == '*' || a == '/')
@@ -60,9 +60,9 @@ int isOperator(char a)
     return 0;
 }
 
-void binaryTree(string postfix, Node *root)
+void binaryTree(string postfix, Node *&root) 
 {
-    // Get the length of the input infix string
+    // Get the length of the input postfix string
     int len = postfix.length();
 
     for (int i = 0; i < len; i++)
@@ -78,8 +78,7 @@ void binaryTree(string postfix, Node *root)
             stack[++top] = temp;
         }
         else
-        { // operand case
-
+        { // operator case
             // Popping elements from stack
             temp->RN = stack[top--];
             temp->LN = stack[top--];
@@ -89,18 +88,19 @@ void binaryTree(string postfix, Node *root)
 
     // assigning top to root
     root = stack[top];
-    cout<<"InOrder: " ;
+
+    cout << "InOrder: ";
     inOrder(root);
-    cout<<"   PreOrder: " ;
-    preOrder(root) ;
-    cout<<"   PostOrder: " ;
-    postOrder(root); 
+    cout << "   PreOrder: ";
+    preOrder(root);
+    cout << "   PostOrder: ";
+    postOrder(root);
 }
 
 int main()
 {
     Node *root = nullptr;
     string str = "ab+cd-*";
-    binaryTree(str, root);
-     return 0;
+    binaryTree(str, root); 
+    return 0;
 }

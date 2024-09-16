@@ -60,6 +60,7 @@ int isOperator(char a)
     return 0;
 }
 
+//expression parser .parsing post order expression
 void binaryTree(string postfix, Node *&root) 
 {
     // Get the length of the input postfix string

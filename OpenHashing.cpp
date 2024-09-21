@@ -99,7 +99,6 @@ void increaseSize()
     hashSize = newHashSize;
 }
 
-
 bool contains(int key)
 {
     int HI = key % hashSize;
@@ -164,6 +163,26 @@ void insert(int key)
     {
         increaseSize();
     }
+}
+
+//searching Node 
+Node *search(int key)
+{
+    int HI = key % hashSize;
+    Node *current = HT[HI];
+
+    while (current != nullptr)
+    {
+        if (current->data == key)
+        {
+            cout << "Key exists" << endl;
+            return current;
+        }
+        current = current->next;
+    }
+
+    cout << "Key not found" << endl; // Optional message when key is not found
+    return nullptr;
 }
 
 // printing the array

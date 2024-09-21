@@ -134,6 +134,32 @@ void insert(int key)
     }
 }
 
+int search(int key)
+{
+    int HI = key % hashSize;
+    int initialHI = HI;
+
+    // This condition shows that key isn't present
+    while (HT[HI] != -1)
+    {
+        // if key founded return index
+        if (HT[HI] == key)
+        {
+            return HI;
+        }
+        // move to next index
+        HI = (HI + 1) % hashSize;
+
+        // If we loop back to the start means we checked the table fully and the key isn't present
+        if (HI == initialHI)
+        {
+            break;
+        }
+    }
+    // Key not found
+    return -1;
+}
+
 // Printing the hash table
 void printArr()
 {

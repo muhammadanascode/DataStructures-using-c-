@@ -1,4 +1,7 @@
 #include <iostream>
+#include <vector>
+#include <stack>
+
 using namespace std;
 
 const int n = 5; // Number of vertices
@@ -155,44 +158,96 @@ int main()
 
 
 // Array of linked lists to represent the adjacency list of the directed graph
-// list<int> linkedListArray[n];
+list<int> linkedListArray[n];
 
-// void addEdge(int u, int v) {
-//     // Check if u and v are within valid range
-//     if (u < 0 || u >= n || v < 0 || v >= n) {
-//         cout << "Invalid vertices: " << u << ", " << v << endl;
-//         return;
-//     }
+void addEdge(int u, int v) {
+    // Check if u and v are within valid range
+    if (u < 0 || u >= n || v < 0 || v >= n) {
+        cout << "Invalid vertices: " << u << ", " << v << endl;
+        return;
+    }
 
-//     // Add an edge from u to v (directed graph)
-//     linkedListArray[u].push_back(v);
-// }
+    // Add an edge from u to v (directed graph)
+    linkedListArray[u].push_back(v);
+}
 
-// void printGraph() {
-//     for (int i = 0; i < n; i++) {
-//         cout << "Adjacency list of vertex " << i << ": ";
-//         for (auto v : linkedListArray[i]) {
-//             cout << v << " ";
-//         }
-//         cout << endl;
-//     }
-// }
+void printGraph() {
+    for (int i = 0; i < n; i++) {
+        cout << "Adjacency list of vertex " << i << ": ";
+        for (auto v : linkedListArray[i]) {
+            cout << v << " ";
+        }
+        cout << endl;
+    }
+}
 
-// int main() {
-//     // Adding directed edges to the graph
-//     addEdge(0, 1);
-//     addEdge(0, 4);
-//     addEdge(1, 2);
-//     addEdge(1, 3);
-//     addEdge(2, 3);
-//     addEdge(3, 4);
+// BFS traversal starting from a given source
+void bfs(int start) {
+    vector<bool> visited(n, false); // Track visited vertices
+    queue<int> q;
 
-//     // Testing with invalid vertices
-//     addEdge(5, 2);  // Invalid, since vertex 5 doesn't exist
-//     addEdge(-1, 0); // Invalid, since vertex -1 doesn't exist
+    visited[start] = true;
+    q.push(start);
 
-//     // Print the adjacency list representation of the graph
-//     printGraph();
+    cout << "BFS starting from vertex " << start << ": ";
+    while (!q.empty()) {
+        int vertex = q.front();
+        q.pop();
+        cout << vertex << " ";
 
-//     return 0;
-// }
+        for (int adj : linkedListArray[vertex]) {
+            if (!visited[adj]) {
+                visited[adj] = true;
+                q.push(adj);
+            }
+        }
+    }
+    cout << endl;
+}
+
+// Iterative DFS traversal starting from a given source
+void dfsIterative(int start) {
+    vector<bool> visited(n, false); // Track visited vertices
+    stack<int> s; // Stack for DFS
+
+    s.push(start); // Push the starting vertex to the stack
+
+    cout << "DFS starting from vertex " << start << ": ";
+    while (!s.empty()) {
+        int vertex = s.top();
+        s.pop();
+
+        // If the vertex hasn't been visited yet
+        if (!visited[vertex]) {
+            cout << vertex << " ";
+            visited[vertex] = true;
+        }
+
+        // Push all adjacent vertices to the stack
+        for (int adj : linkedListArray[vertex]) {
+            if (!visited[adj]) {
+                s.push(adj);
+            }
+        }
+    }
+    cout << endl;
+}
+
+int main() {
+    // Adding directed edges to the graph
+    addEdge(0, 1);
+    addEdge(0, 4);
+    addEdge(1, 2);
+    addEdge(1, 3);
+    addEdge(2, 3);
+    addEdge(3, 4);
+
+    // Testing with invalid vertices
+    addEdge(5, 2);  // Invalid, since vertex 5 doesn't exist
+    addEdge(-1, 0); // Invalid, since vertex -1 doesn't exist
+
+    // Print the adjacency list representation of the graph
+    printGraph();
+
+    return 0;
+}

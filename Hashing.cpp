@@ -1,20 +1,19 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-// hash size and hash table
+// Initial hash size and hash table
 int hashSize = 7;
 int *HT = new int[hashSize];
 
 // Number of elements in hash table
 int n = 0;
 
-// function to initialize array with zeros
+// Function to initialize array with -1 to indicate empty slots
 void initializeArr(int *&arr, int size)
 {
     for (int i = 0; i < size; i++)
     {
-        arr[i] = 0;
+        arr[i] = -1; // Use -1 to represent empty slots
     }
 }
 
@@ -22,20 +21,20 @@ void initializeArr(int *&arr, int size)
 int findNextPrime()
 {
     int nextPrime = hashSize * 2;
-    bool flag = false;
+    bool isPrime = false;
 
-    while (!flag)
+    while (!isPrime)
     {
-        flag = true;
+        isPrime = true;
         for (int i = 2; i <= nextPrime / 2; i++)
         {
             if (nextPrime % i == 0)
             {
-                flag = false; // It's not prime
+                isPrime = false; // It's not prime
                 break;
             }
         }
-        if (!flag)
+        if (!isPrime)
         {
             nextPrime++;
         }
@@ -43,41 +42,33 @@ int findNextPrime()
     return nextPrime;
 }
 
-// Increasing the size of the hash table and copying the elements
+// Increasing the size of the hash table and rehashing elements
 void increaseSize()
 {
-    // new hash size and hash table
     int newHashSize = findNextPrime();
     int *newHT = new int[newHashSize];
 
-    // initialize new hash table with zeros
+    // Initialize the new hash table with -1
     initializeArr(newHT, newHashSize);
 
-    // copying the indexes of old hash table into new hash table
+    // Rehash existing elements into the new hash table
     for (int i = 0; i < hashSize; i++)
     {
-        if (HT[i] != 0)
-        {
+        if (HT[i] != -1)
+        { // Only rehash non-empty slots
             int key = HT[i];
             int newHI = key % newHashSize;
 
-            if (newHT[newHI] == 0)
+            // Linear probing to find an empty slot
+            while (newHT[newHI] != -1)
             {
-                newHT[newHI] = key;
+                newHI = (newHI + 1) % newHashSize;
             }
-            else
-            {
-                // moving ahead of hash index until we found available index
-                while (newHT[newHI] != 0)
-                {
-                    newHI = (newHI + 1) % newHashSize;
-                }
-                newHT[newHI] = key;
-            }
+            newHT[newHI] = key;
         }
     }
 
-    delete[] HT; // free the old hash table memory
+    delete[] HT; // Free the old hash table memory
     HT = newHT;
     hashSize = newHashSize;
 }
@@ -86,8 +77,8 @@ void increaseSize()
 bool contains(int key)
 {
     int HI = key % hashSize;
-    while (HT[HI] != 0)
-    {
+    while (HT[HI] != -1)
+    { // Check until an empty slot
         if (HT[HI] == key)
             return true;
         HI = (HI + 1) % hashSize;
@@ -95,62 +86,54 @@ bool contains(int key)
     return false;
 }
 
+// Insert a key into the hash table
 void insert(int key)
 {
-    // Check if the key already exists in the hash table
+    // Check if the key already exists
     if (contains(key))
     {
         cout << "Key " << key << " is already present in the hash table." << endl;
         return;
     }
 
-    // calculating hash index
     int HI = key % hashSize;
 
-    // if hash index is available
-    if (HT[HI] == 0)
+    // Linear probing to find an empty slot
+    while (HT[HI] != -1)
     {
-        HT[HI] = key;
-        n++;
+        HI = (HI + 1) % hashSize;
     }
-    else
-    {
-        // moving ahead of hash index until we found available index
-        while (HT[HI] != 0)
-        {
-            HI = (HI + 1) % hashSize;
-        }
-        HT[HI] = key;
-        n++;
-    }
+    HT[HI] = key;
+    n++;
 
-    // Update the global load factor after each insertion
+    // Update the load factor
     double loadFactor = (double)n / hashSize;
 
-    // If load factor exceeds 0.5, increase the size of the hash table
+    // Increase the size if the load factor exceeds 0.5
     if (loadFactor > 0.5)
     {
         increaseSize();
     }
 }
 
+// Search for a key in the hash table
 int search(int key)
 {
     int HI = key % hashSize;
     int initialHI = HI;
 
-    // This condition shows that key isn't present
+    // This condition shows that the key isn't present
     while (HT[HI] != -1)
     {
-        // if key founded return index
+        // If key is found, return index
         if (HT[HI] == key)
         {
             return HI;
         }
-        // move to next index
+        // Move to the next index
         HI = (HI + 1) % hashSize;
 
-        // If we loop back to the start means we checked the table fully and the key isn't present
+        // If we loop back to the start, we've checked the table fully
         if (HI == initialHI)
         {
             break;
@@ -165,15 +148,16 @@ void printArr()
 {
     for (int i = 0; i < hashSize; i++)
     {
-        cout << HT[i] << endl;
+        cout << i << ": " << HT[i] << endl;
     }
 }
 
 int main()
 {
-    // initialize array with zeros
+    // Initialize the hash table with -1 to mark empty slots
     initializeArr(HT, hashSize);
 
+    // Insert keys into the hash table
     insert(29);
     insert(31);
     insert(30);
@@ -181,6 +165,7 @@ int main()
     insert(35);
     insert(37);
 
+    // Print the hash table
     printArr();
 
     return 0;
